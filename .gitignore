@@ -203,3 +203,4 @@ fabric.properties
 *.iml
 out
 gen
+epubw/resources
