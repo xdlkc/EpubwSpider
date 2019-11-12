@@ -1,38 +1,30 @@
 # -*- coding: utf-8 -*-
-import re
 
 from scrapy_redis.spiders import RedisSpider
-
+import re
 from epubw.keys import *
 from epubw.tools import RedisManager, MysqlManager
 
 
-class SecondbookSpider(RedisSpider):
-    name = 'SecondBook'
-    redis_key = BOOK_SECOND_URL_KEY
-    last_book_set = set()
+class ThirdSpider(RedisSpider):
+    name = 'ThirdBook'
+    redis_key = BOOK_THIRD_URL_KEY
     allowed_domains = ['epubw.com']
+    # https://epubw.com/download/?o=vfO5Cg==
 
     def __init__(self):
         self.r = RedisManager().rc
         self.db = MysqlManager()
 
     def parse(self, response):
-        url = response.url
+        parent_url = response.url
         link = response.xpath('//div[@class="list"]/a/@href').extract()[0]
-        name = response.xpath('//div[@class="desc"]/p/text()').extract()[0]
-        name = re.findall('文件名称：《(.*)》', name)[0]
-        id = self.r.hget(BOOK_ID_HASH, url)
-        print(id)
+        secret = response.xpath('//div[@class="desc"]/p/text()')[-1].extract()
+        code = re.findall('.*百度网盘密码：(.*)', secret)[0].strip()
+        id = self.r.hget(BOOK_LAST_ID_HASH, parent_url)
         if id is None:
             print("{} not exists".format(id))
             return
-        sql = 'update book set name=%s,url=%s where id=%s'
-        self.db.execute_dml(sql, name, url, int(id))
-        self.last_book_set.add('{} {}'.format(name, link))
-
-    def closed(self, reason):
-        for s in self.last_book_set:
-            self.f.write(s + "\n")
-        print("crawl over, save file")
-        self.f.close()
+        # sql = 'update book set last_url=%s where id=%s'
+        sql = 'update book set secret = %s where id =%s '
+        self.db.execute_dml(sql, code, int(id))

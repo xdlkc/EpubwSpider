@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from scrapy_redis.spiders import RedisSpider
-
+import re
 from epubw.keys import *
 from epubw.tools import RedisManager, MysqlManager
 
 
-class ThirdSpider(RedisSpider):
-    name = 'ThirdBook'
-    redis_key = BOOK_THIRD_URL_KEY
+class ForthSpider(RedisSpider):
+    # https://epubw.com/download/?o=47X0QxAcsbWpLI4FDMFHHH8Fu8gaYzAtdxeHO+fRvz8nHWFoUNT4mWIxCnEog8c=
+    name = 'ForthBook'
+    redis_key = BOOK_FORTH_URL_KEY
     allowed_domains = ['epubw.com']
 
     def __init__(self):
@@ -16,18 +17,12 @@ class ThirdSpider(RedisSpider):
         self.db = MysqlManager()
 
     def parse(self, response):
-        url = response.url
-        s = response.xpath('//div[@class="list"]/a/@href').extract()[0]
-        id = self.r.hget(BOOK_LAST_ID_HASH, url)
-        print(id)
-        if id is None:
-            print("{} not exists".format(id))
-            return
-        sql = 'update book set last_url=%s where id=%s'
-        self.db.execute_dml(sql, s, int(id))
-
-    # def closed(self, reason):
-    #     for s in self.last_book_set:
-    #         self.f.write(s + "\n")
-    #     print("crawl over, save file")
-    #     self.f.close()
+        s = response.xpath('//noscript/meta/@content').extract()[0]
+        t = re.findall(".*url=\'(.*)\';", s)
+        if len(t) == 0:
+            print(response.url)
+        else:
+            id = self.r.hget(BOOK_THIRD_ID_HASH, response.url)
+            sql = 'update book set pan_url=%s where id=%s'
+            self.db.execute_dml(sql, t[0], int(id))
+            print("{}:{}".format(id, t[0]))
