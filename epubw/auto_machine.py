@@ -36,13 +36,13 @@ def input_code(url, code, browser):
 
         # 等待文件列表页出现
         wait = WebDriverWait(browser, 10)
-        wait.until(ec.presence_of_all_elements_located(
-            (By.CLASS_NAME, "slide-show-left")))
+        wait.until(ec.presence_of_all_elements_located((By.CLASS_NAME, "slide-show-left")))
         print("open url success")
         # 选中所有文件
-        browser.find_element_by_xpath('//*[@id="shareqr"]/div[2]/div[2]/div/ul[1]/li[1]/div/span[1]').click()
+        browser.find_element_by_xpath('//li[@data-key="server_filename"]/div/span[1]').click()
         # 选中保存网盘按钮
         browser.find_element_by_xpath('//a[@title="保存到网盘"]/span/span').click()
+
         # 等待目录选中窗口出现
         wait = ui.WebDriverWait(browser, 10)
         wait.until(ec.presence_of_all_elements_located((By.ID, 'fileTreeDialog')))
@@ -56,7 +56,7 @@ def input_code(url, code, browser):
         # 确定保存
         xf.find_element_by_xpath('//a[@title="确定"]').click()
         time.sleep(3)
-        print("save success url :{}".format(url))
+        print("save success url :{}\n".format(url))
     except Exception as e:
         print(e)
     finally:
@@ -104,7 +104,7 @@ def read_books_url_and_code():
     从DB读取网盘地址及提取码，读取规则自行更改
     """
     m = MysqlManager()
-    return m.execute_query('select id,pan_url,secret from book limit 10;')
+    return m.execute_query('select id,pan_url,secret from book limit 2;')
 
 
 if __name__ == '__main__':

@@ -10,7 +10,7 @@ MySQL
 Redis
 
 # 结构图
-
 ![未命名文件](https://tva1.sinaimg.cn/large/006y8mN6ly1g9afd3uf5hj30vk0u0ady.jpg)
 
-
+# 备注
+爬虫违规案例：https://github.com/HiddenStrawberry/Crawler_Illegal_Cases_In_China
