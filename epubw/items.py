@@ -15,12 +15,17 @@ class EpubwItem(scrapy.Item):
 
 
 class BookItem(scrapy.Item):
+    # 书名
     name = scrapy.Field()
+    # 作者
     author = scrapy.Field()
     # 图书图片
     img = scrapy.Field()
+    # 出版日期
     publish_date = scrapy.Field()
+    # 出版社
     publisher = scrapy.Field()
+    # isbn号
     isbn = scrapy.Field()
     # 一级地址
     first_url = scrapy.Field()

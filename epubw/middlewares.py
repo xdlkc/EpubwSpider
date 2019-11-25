@@ -4,8 +4,9 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
+from random import random
 from scrapy import signals
+from epubw.keys import USER_AGENT_LIST
 
 
 class EpubwSpiderMiddleware(object):
@@ -101,3 +102,20 @@ class EpubwDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+class RandomUserAgentMiddleware(object):
+    """
+    随机更换User-Agent Middleware
+    """
+
+    def __init__(self, crawler):
+        super(RandomUserAgentMiddleware, self).__init__()
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+    def process_request(self, request, spider):
+        ua = random.sample(USER_AGENT_LIST, 1)
+        request.headers.setdefault('User-Agent', ua)
