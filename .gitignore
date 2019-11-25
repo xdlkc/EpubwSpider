@@ -204,3 +204,4 @@ fabric.properties
 out
 gen
 epubw/resources
+**/*.pickle
