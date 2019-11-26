@@ -1,5 +1,3 @@
-import base64
-
 import pytesseract as pt
 import requests
 from PIL import Image

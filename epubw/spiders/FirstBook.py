@@ -23,11 +23,6 @@ class FirstBookSpider(RedisSpider):
         first_url = response.url
         second_url = response.xpath('//table[@class="dltable"]/tbody/tr[last()]/td/a/@href').extract()[0]
         info_dom = response.xpath('//div[@class="bookinfo"]/ul/li')
-        # name = info_dom[0].xpath('./a/text()').extract()
-        # if len(name) > 0:
-        #     name = name[0]
-        # else:
-        #     name = self.unknown_name
 
         # 作者信息
         author = info_dom[1].xpath('./a/text()').extract()

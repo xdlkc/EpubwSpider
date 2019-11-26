@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-
+import re
 from epubw.keys import *
 from epubw.settings import *
 from epubw.tools import RedisManager
@@ -12,28 +12,23 @@ class IndexSpider(scrapy.Spider):
     name = INDEX_SPIDER_NAME
     allowed_domains = ['epubw.com']
     # 网站初始页码，用于服务中断后的记录位置
-    init_page = 1
+    init_page = 20
     # 网站最大页数
     max_pages = 500
+    default_url_prefix = 'https://epubw.com/page/'
 
     def __init__(self):
         self.r = RedisManager().rc
-        self.start_urls = ["{}/page/{}".format(PUBLIC_URL_PREFIX, self.init_page)]
+        self.start_urls = ["{}{}".format(self.default_url_prefix, self.init_page)]
 
     def parse(self, response):
-        meta = response.meta
-        # 首次触发
-        if meta is not None and 'page' in meta:
-            page = meta['page']
-        else:
-            page = self.init_page
-        print('crawl page:{}'.format(page))
         articles = response.xpath('//div[@class="row equal"]/article')
         # 逐条解析
         for article in articles:
-            link = article.xpath('./a/@href').extract()[0]
-            name = article.xpath('./div[@class="caption"]/p/a/text()').extract()[0]
-            img = article.xpath('./a/img/@src').extract()[0]
+            img = article.xpath('//img/@src')[0].extract()
+            tmp = article.xpath('./div[@class="caption"]/p/a')
+            name = tmp.xpath('./text()')[0].extract()
+            link = tmp.xpath('./@href')[0].extract()
             # 推送redis队列
             self.r.lpush(BOOK_FIRST_URL_KEY, link)
             item = BookItem()
@@ -41,9 +36,9 @@ class IndexSpider(scrapy.Spider):
             item['first_url'] = link
             item['img'] = img
             yield item
-        page += 1
-        meta['page'] = page
-        if page < self.max_pages:
-            # 爬取下一页
-            yield scrapy.Request(url='https://epubw.com/page/{}'.format(page), meta=meta, callback=self.parse,
-                                 dont_filter=True)
+        url = response.url
+        current_page = int(re.findall(self.default_url_prefix + '(\d+)', url)[0])
+        print(current_page)
+        if current_page < self.max_pages:
+            current_page += 1
+            yield scrapy.Request('{}{}'.format(self.default_url_prefix, current_page), callback=self.parse)

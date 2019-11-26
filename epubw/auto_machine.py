@@ -13,7 +13,7 @@ from tools import MysqlManager
 BAIDU_NETDISK_COOKIE_PATH = 'resources/baidu_netdisk.pickle'
 
 
-def input_code(url, code, browser):
+def auto_extract_file(url, code, browser):
     """
     自动完成提取码填充和文件保存任务
     """
@@ -111,5 +111,5 @@ if __name__ == '__main__':
     r = read_books_url_and_code()
     browser = webdriver.Chrome()
     for ri in r:
-        input_code(ri[1], ri[2], browser)
+        auto_extract_file(ri[1], ri[2], browser)
     browser.quit()

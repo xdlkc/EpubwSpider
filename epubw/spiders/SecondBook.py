@@ -20,8 +20,6 @@ class SecondSpider(RedisSpider):
     def parse(self, response):
         second_url = response.url
         third_url = response.xpath('//div[@class="list"]/a/@href').extract()[0]
-        # name = response.xpath('//div[@class="desc"]/p/text()').extract()[0]
-        # name = re.findall('文件名称：《(.*)》', name)[0]
         secret = response.xpath('//div[@class="desc"]/p/text()')[-1].extract()
         # 网盘提取密码
         code = re.findall('.*百度网盘密码：(.*)', secret)[0].strip()

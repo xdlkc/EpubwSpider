@@ -98,5 +98,3 @@ REDIS_HOST = "127.0.0.1"
 REDIS_PORT = "6379"
 # 使用的哈希函数数，默认为6
 BLOOMFILTER_HASH_NUMBER = 6
-# 公共网址前缀
-PUBLIC_URL_PREFIX = 'https://epubw.com'

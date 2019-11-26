@@ -1,11 +1,9 @@
 import logging
-import time
 
-import requests
 from mysql.connector import pooling
 from redis import Redis
 
-from epubw.keys import *
+from epubw.settings import REDIS_HOST, REDIS_PORT
 
 # mysql配置
 MYSQL_CONFIG = {
@@ -18,9 +16,6 @@ MYSQL_CONFIG = {
     'password': 'wimness.',
     'charset': 'utf8'
 }
-# redis集群配置
-STARTUP_NODES = [{"host": "127.0.0.1", "port": "7000"}, {"host": "127.0.0.1", "port": "7001"},
-                 {"host": "127.0.0.1", "port": "7002"}]
 
 
 class MysqlManager(object):
@@ -60,4 +55,4 @@ class MysqlManager(object):
 
 class RedisManager(object):
     def __init__(self):
-        self.rc = Redis(decode_responses=True)
+        self.rc = Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
