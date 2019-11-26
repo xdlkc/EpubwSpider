@@ -10,24 +10,25 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from tools import MysqlManager
 
-BAIDU_NETDISK_COOKIE_PATH = 'baidu_netdisk.pickle'
+BAIDU_NETDISK_COOKIE_PATH = 'resources/baidu_netdisk.pickle'
 
 
 def input_code(url, code, browser):
     """
     自动完成提取码填充和文件保存任务
     """
-    cookies = read_cookies()
+    cookies = read_cookies(browser)
     try:
         print("start process url:{} and code:{}".format(url, code))
         browser.get(url)
-        for cookie in cookies:
-            browser.add_cookie({
-                "name": cookie,
-                "value": cookies[cookie],
-                "domain": ".pan.baidu.com",
-                "path": "/"
-            })
+        # 必须放在get之后，否则domain会提示非法
+        # for cookie in cookies:
+        #     browser.add_cookie({
+        #         "name": cookie,
+        #         "value": cookies[cookie],
+        #         "domain": ".pan.baidu.com",
+        #         "path": "/"
+        #     })
         print("set cookies success")
         input = browser.find_element_by_id('mwxxPOD')
         # 填入提取码并提交
@@ -63,20 +64,20 @@ def input_code(url, code, browser):
         return
 
 
-def get_cookies(url):
+def get_cookies(browser, url):
     """
     获取网盘cookie并写入cookie文件
     :param url:
     :return:
     """
-    browser = webdriver.Chrome()
     browser.get(url)
-    login_success_url = url + '?errno=0&errmsg=Auth%20Login%20Sucess&&bduss=&ssnerror=0&traceid=#list/path=%2F'
+    login_success_url = url + '/disk/home?errno=0&errmsg=Auth%20Login%20Sucess&&bduss=&ssnerror=0&traceid=#/all?path' \
+                              '=%2F&vmode=list'
     while True:
-        time.sleep(10)
+        time.sleep(5)
         while browser.current_url == login_success_url:
             baidu_cookies = browser.get_cookies()
-            browser.quit()
+            # browser.close()
             cookies = {}
             for item in baidu_cookies:
                 cookies[item['name']] = item['value']
@@ -86,7 +87,7 @@ def get_cookies(url):
             return cookies
 
 
-def read_cookies():
+def read_cookies(browser):
     """
     读取cookie,若本地不存在，则手动登录一次即可
     """
@@ -94,8 +95,7 @@ def read_cookies():
         path = open(BAIDU_NETDISK_COOKIE_PATH, 'rb')
         cookies = pickle.load(path)
     else:
-        # https://pan.baidu.com/s/1oE4gGe1Kn-jkuFhVR2aNJQ:id8a
-        cookies = get_cookies('https://pan.baidu.com/s/1oE4gGe1Kn-jkuFhVR2aNJQ')
+        cookies = get_cookies(browser, 'https://pan.baidu.com')
     return cookies
 
 
@@ -112,4 +112,4 @@ if __name__ == '__main__':
     browser = webdriver.Chrome()
     for ri in r:
         input_code(ri[1], ri[2], browser)
-    browser.close()
+    browser.quit()
