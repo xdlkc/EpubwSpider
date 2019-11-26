@@ -55,4 +55,5 @@ class MysqlManager(object):
 
 class RedisManager(object):
     def __init__(self):
-        self.rc = Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
+        self.rc = Redis(host=REDIS_HOST, port=REDIS_PORT,
+                        decode_responses=True)

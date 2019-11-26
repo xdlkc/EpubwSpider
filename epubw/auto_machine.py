@@ -17,7 +17,7 @@ def auto_extract_file(url, code, browser):
     """
     自动完成提取码填充和文件保存任务
     """
-    cookies = read_cookies(browser)
+    # cookies = read_cookies(browser)
     try:
         print("start process url:{} and code:{}".format(url, code))
         browser.get(url)
@@ -64,6 +64,18 @@ def auto_extract_file(url, code, browser):
         return
 
 
+def read_cookies(browser):
+    """
+    读取cookie,若本地不存在，则手动登录一次即可
+    """
+    if os.path.exists(BAIDU_NETDISK_COOKIE_PATH):
+        path = open(BAIDU_NETDISK_COOKIE_PATH, 'rb')
+        cookies = pickle.load(path)
+    else:
+        cookies = get_cookies(browser, 'https://pan.baidu.com')
+    return cookies
+
+
 def get_cookies(browser, url):
     """
     获取网盘cookie并写入cookie文件
@@ -77,7 +89,6 @@ def get_cookies(browser, url):
         time.sleep(5)
         while browser.current_url == login_success_url:
             baidu_cookies = browser.get_cookies()
-            # browser.close()
             cookies = {}
             for item in baidu_cookies:
                 cookies[item['name']] = item['value']
@@ -87,24 +98,13 @@ def get_cookies(browser, url):
             return cookies
 
 
-def read_cookies(browser):
-    """
-    读取cookie,若本地不存在，则手动登录一次即可
-    """
-    if os.path.exists(BAIDU_NETDISK_COOKIE_PATH):
-        path = open(BAIDU_NETDISK_COOKIE_PATH, 'rb')
-        cookies = pickle.load(path)
-    else:
-        cookies = get_cookies(browser, 'https://pan.baidu.com')
-    return cookies
-
-
 def read_books_url_and_code():
     """
     从DB读取网盘地址及提取码，读取规则自行更改
     """
     m = MysqlManager()
-    return m.execute_query('select id,pan_url,secret from book limit 2;')
+    return m.execute_query(
+        'select id,pan_url,secret from book where pan_url is not null  and secret is not null limit 2;')
 
 
 if __name__ == '__main__':

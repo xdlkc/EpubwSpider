@@ -2,7 +2,6 @@
 import scrapy
 import re
 from epubw.keys import *
-from epubw.settings import *
 from epubw.tools import RedisManager
 from epubw.items import BookItem
 

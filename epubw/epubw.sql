@@ -1,4 +1,5 @@
 -- auto-generated definition
+use epubw;
 create table book
 (
     id           bigint auto_increment
