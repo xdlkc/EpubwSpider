@@ -17,19 +17,20 @@ def auto_extract_file(url, code, browser):
     """
     自动完成提取码填充和文件保存任务
     """
-    # cookies = read_cookies(browser)
+    cookies = read_cookies(browser)
     try:
         print("start process url:{} and code:{}".format(url, code))
         browser.get(url)
         # 必须放在get之后，否则domain会提示非法
-        # for cookie in cookies:
-        #     browser.add_cookie({
-        #         "name": cookie,
-        #         "value": cookies[cookie],
-        #         "domain": ".pan.baidu.com",
-        #         "path": "/"
-        #     })
+        for cookie in cookies:
+            browser.add_cookie({
+                "name": cookie,
+                "value": cookies[cookie],
+                "domain": ".pan.baidu.com",
+                "path": "/"
+            })
         print("set cookies success")
+        time.sleep(1000)
         input = browser.find_element_by_id('mwxxPOD')
         # 填入提取码并提交
         input.send_keys(code)
@@ -109,7 +110,6 @@ def read_books_url_and_code():
 
 if __name__ == '__main__':
     r = read_books_url_and_code()
+    # print(r)
     browser = webdriver.Chrome()
-    for ri in r:
-        auto_extract_file(ri[1], ri[2], browser)
-    browser.quit()
+    auto_extract_file('https://pan.baidu.com/disk/home?errno=0&errmsg=Auth%20Login%20Sucess&&bduss=&ssnerror=0&traceid=#/all?path=%2F&vmode=list',111, browser)
