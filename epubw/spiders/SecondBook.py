@@ -23,8 +23,7 @@ class SecondSpider(RedisSpider):
         secret = response.xpath('//div[@class="desc"]/p/text()')[-1].extract()
         # 网盘提取密码
         code = re.findall('.*百度网盘密码：(.*)', secret)[0].strip()
-        # 推送至redis队列
-        self.r.lpush(BOOK_THIRD_URL_KEY, third_url)
+
         item = BookItem()
         item[SECOND_URL] = second_url
         item[THIRD_URL] = third_url

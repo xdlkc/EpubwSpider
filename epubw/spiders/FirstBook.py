@@ -63,8 +63,6 @@ class FirstBookSpider(RedisSpider):
         else:
             isbn = self.unknown_name
 
-        # 推送二级地址到redis队列
-        self.r.lpush(BOOK_SECOND_URL_KEY, second_url)
         item = BookItem()
         item[AUTHOR] = author
         item[PUBLISH_DATE] = date

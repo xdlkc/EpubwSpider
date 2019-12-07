@@ -11,9 +11,9 @@ class IndexSpider(scrapy.Spider):
     name = INDEX_SPIDER_NAME
     allowed_domains = ['epubw.com']
     # 网站初始页码，用于服务中断后的记录位置
-    init_page = 20
+    init_page = 1
     # 网站最大页数
-    max_pages = 500
+    max_pages = 100
     default_url_prefix = 'https://epubw.com/page/'
 
     def __init__(self):
@@ -28,8 +28,6 @@ class IndexSpider(scrapy.Spider):
             tmp = article.xpath('./div[@class="caption"]/p/a')
             name = tmp.xpath('./text()')[0].extract()
             link = tmp.xpath('./@href')[0].extract()
-            # 推送redis队列
-            self.r.lpush(BOOK_FIRST_URL_KEY, link)
             item = BookItem()
             item['name'] = name
             item['first_url'] = link

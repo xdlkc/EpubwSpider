@@ -10,10 +10,16 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from tools import MysqlManager
 
-BAIDU_NETDISK_COOKIE_PATH = 'resources/baidu_netdisk.pickle'
+BAIDU_NETDISK_COOKIE_PATH = 'epubw/resources/baidu_netdisk.pickle'
 
 
-def auto_extract_file(url, code, browser):
+def auto_extract_file(url, code):
+    browser = webdriver.Chrome()
+    auto_extract_files(url, code, browser)
+    browser.quit()
+
+
+def auto_extract_files(url, code, browser):
     """
     自动完成提取码填充和文件保存任务
     """
@@ -30,7 +36,6 @@ def auto_extract_file(url, code, browser):
                 "path": "/"
             })
         print("set cookies success")
-        time.sleep(1000)
         input = browser.find_element_by_id('mwxxPOD')
         # 填入提取码并提交
         input.send_keys(code)
@@ -99,17 +104,21 @@ def get_cookies(browser, url):
             return cookies
 
 
-def read_books_url_and_code():
+def read_books_url_and_code(book_name):
     """
     从DB读取网盘地址及提取码，读取规则自行更改
     """
     m = MysqlManager()
-    return m.execute_query(
-        'select id,pan_url,secret from book where pan_url is not null  and secret is not null limit 2;')
+    query_sql = 'select id,pan_url,secret,name,author,publish_date,publisher from book ' \
+                'where pan_url is not null  and secret is not null and name like "%{}%" limit 2;'.format(book_name)
+    print(query_sql)
+    return m.execute_query(query_sql)
 
 
 if __name__ == '__main__':
-    r = read_books_url_and_code()
+    r = read_books_url_and_code('参与感')
     # print(r)
     browser = webdriver.Chrome()
-    auto_extract_file('https://pan.baidu.com/disk/home?errno=0&errmsg=Auth%20Login%20Sucess&&bduss=&ssnerror=0&traceid=#/all?path=%2F&vmode=list',111, browser)
+    for ri in r:
+        auto_extract_files(ri[1], ri[2], browser)
+    browser.quit()
