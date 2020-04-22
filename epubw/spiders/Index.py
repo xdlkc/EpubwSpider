@@ -11,12 +11,13 @@ class IndexSpider(scrapy.Spider):
     name = INDEX_SPIDER_NAME
     allowed_domains = ['epubw.com']
     # 网站初始页码，用于服务中断后的记录位置
-    init_page = 1
+    init_page = 0
     # 网站最大页数
-    max_pages = 100
+    max_pages = 40
     default_url_prefix = 'https://epubw.com/page/'
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.r = RedisManager().rc
         self.start_urls = ["{}{}".format(self.default_url_prefix, self.init_page)]
 

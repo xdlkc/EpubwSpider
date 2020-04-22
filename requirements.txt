@@ -1,9 +1,9 @@
 flask
-redis==2.10.6
-scrapy_redis==0.6.8
-requests==2.22.0
-Scrapy==1.7.4
-selenium==3.141.0
-pytesseract==0.3.0
-mysql_connector_repackaged==0.3.1
-Pillow==6.2.1
+redis
+scrapy-redis
+requests
+Scrapy
+selenium
+pytesseract
+mysql_connector_repackaged
+Pillow

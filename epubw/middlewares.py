@@ -117,5 +117,7 @@ class RandomUserAgentMiddleware(object):
         return cls(crawler)
 
     def process_request(self, request, spider):
-        ua = random.sample(USER_AGENT_LIST, 1)
-        request.headers.setdefault('User-Agent', ua)
+        ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"
+        # request.headers.setdefault('User-Agent', ua)
+        # request.cookie = {"cf_clearance": "a91c2bf5ae2aa096c34ed6090c5a77add367d08f-1586713763-0-150",
+        #                   "__cfduid": "de314798f9bd2f6868d888d1005a590191586713763"}

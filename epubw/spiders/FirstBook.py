@@ -15,13 +15,18 @@ class FirstBookSpider(RedisSpider):
     # 默认填充内容
     unknown_name = 'unknown'
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.r = RedisManager().rc
         self.db = MysqlManager()
 
     def parse(self, response):
         first_url = response.url
-        second_url = response.xpath('//table[@class="dltable"]/tbody/tr[last()]/td/a/@href').extract()[0]
+        second_url_path = response.xpath('//table[@class="dltable"]/tbody/tr[last()]/td/a/@href').extract()
+        if len(second_url_path) == 0:
+            print("{}未找到下级URL信息，已跳过".format(first_url))
+            return
+        second_url = second_url_path[0]
         info_dom = response.xpath('//div[@class="bookinfo"]/ul/li')
 
         # 作者信息
